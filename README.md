@@ -12,33 +12,34 @@ pip install -r requirements.txt
 
 # Useful scripts
 
-[vanity_npub](./scripts/vanity_npub.py) is an adaptation of [knmukai/nostr_vanity_npub](https://github.com/kdmukai/nostr_vanity_npub) to generate an npub, the nsec. I added the corresponding mnemonic, or seed phrase. (line 68-72)
+The `generate_npub.py` script can either generate a new keypair and mnemonic or take an existing mnemonic as an input and return the corresponding keypair.
 
-example usage is:
+## Example usage
+
+To generate a new keypair and mnemonic:
 ```
-python scripts/vanity_pub.py ad
-```
-where 'ad' is the vanity prefix.
-
-The resulting output will look like something like this:
-
-```
-['ad']
-[]
-Initialized 2 threads
-2024-06-21 16:01:57.962982: Starting
-
-0 | 0.0s | ad | npub1adtendhqyjpjr272wp485r3je5lhft9zquag6np725nc0efpu2ksrdrvf0
-
-        ****************************************************************************
-        Private key: nsec1a8eufd2ammz8fmq8gkpgz48cllr297xl0llxank2uj8ydfl9ydnsdmfs60
-        ****************************************************************************
-
-
-        *********************************************************************************
-        Private key hex: e9f3c4b55ddec474ec0745828154f8ffc6a2f8df7ffe6ececae48e46a7e52367
-        *********************************************************************************
-
-Mnemonic Phrase: try owner coil roof unable denial quote trim little apple dilemma zebra health ladder law zone human iron rice broken heavy verb mirror trouble
+python scripts/generate_npub.py
 ```
 
+The resulting output will look like this:
+```
+{
+    "npub": "npub1dycs3djwma96kpaf68s8047k0z2fe2rnm5p6eecwtgsadhqf5xrqkzqug9",
+    "nsec": "nsec16qy5a9egwe28wduv975rcgvfnzswnk4pvs2v0dq7x5qyemqkrzysvw64d5",
+    "bip39_nsec": "source engine place extend grab describe taste magnet popular three give course attend unhappy machine little sibling path minute above solution arch giraffe call"
+}
+```
+
+To use an existing mnemonic to get the corresponding keypair:
+```
+python scripts/generate_npub.py "source engine place extend grab describe taste magnet popular three give course attend unhappy machine little sibling path minute above solution arch giraffe call"
+```
+
+The resulting output will look like this:
+```
+{
+    "npub": "npub1dycs3djwma96kpaf68s8047k0z2fe2rnm5p6eecwtgsadhqf5xrqkzqug9",
+    "nsec": "nsec16qy5a9egwe28wduv975rcgvfnzswnk4pvs2v0dq7x5qyemqkrzysvw64d5",
+    "bip39_nsec": "source engine place extend grab describe taste magnet popular three give course attend unhappy machine little sibling path minute above solution arch giraffe call"
+}
+```
