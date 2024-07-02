@@ -2,7 +2,6 @@ import json
 from nostr.key import PrivateKey
 from mnemonic import Mnemonic
 
-
 def generate_private_key():
     # Generate a new private key
     pk = PrivateKey()
@@ -21,7 +20,6 @@ def entropy_from_mnemonic(mnemonic_phrase):
 
 def nsec_from_entropy(entropy):
     # Ensure the entropy is 32 bytes and a bytes object
-
     if isinstance(entropy, bytearray):
         entropy = bytes(entropy)
     if len(entropy) < 32:
@@ -30,8 +28,7 @@ def nsec_from_entropy(entropy):
         entropy = entropy[:32]
 
     pk = PrivateKey(entropy)
-    return pk.bech32()
-
+    return pk.bech32(), pk
 
 def generate_keypair_and_mnemonic():
     # Generate a new private key and entropy
@@ -50,7 +47,7 @@ def generate_keypair_and_mnemonic():
     derived_entropy = entropy_from_mnemonic(mnemonic)
     assert original_entropy == derived_entropy, "Entropy mismatch!"
 
-    derrived_nsec = nsec_from_entropy(derived_entropy)
+    derrived_nsec = nsec_from_entropy(derived_entropy)[0]
     assert nsec == derrived_nsec, "nsec mismatch!"
 
     # Create the output dictionary
@@ -59,15 +56,48 @@ def generate_keypair_and_mnemonic():
         "nsec": nsec,
         "entropy": original_entropy.hex(),
         "bip39_nsec": mnemonic,
-        "entropy_from_mnemonic": derived_entropy.hex(),
         "nsec_from_mnemonic": derrived_nsec
     }
 
     return output
 
+def get_keypair_from_mnemonic(mnemonic):
+    # Assume input is a seed phrase (mnemonic)
+    original_entropy = entropy_from_mnemonic(mnemonic)
+
+    # Get the private key and public key
+    pk = nsec_from_entropy(original_entropy)[1]
+    npub = pk.public_key.bech32()
+    nsec = pk.bech32()
+
+    # Generate mnemonic from original entropy
+    derived_mnemonic = mnemonic_from_entropy(original_entropy)
+
+    # Verify that the mnemonic can be converted back to the same entropy
+    derived_entropy = entropy_from_mnemonic(derived_mnemonic)
+    assert original_entropy == derived_entropy, "Entropy mismatch!"
+
+    derrived_nsec = nsec_from_entropy(derived_entropy)[0]
+    assert nsec == derrived_nsec, "nsec mismatch!"
+    # Create the output dictionary
+    output = {
+        "npub": npub,
+        "nsec": nsec,
+        "entropy": original_entropy.hex(),
+        "bip39_nsec": mnemonic,
+        "nsec_from_mnemonic": derrived_nsec
+    }
+    
+    return output
+
 if __name__ == "__main__":
-    # Generate the key pair and mnemonic
-    keypair_and_mnemonic = generate_keypair_and_mnemonic()
+    import sys
+    # Example usage
+    input_value = sys.argv[1] if len(sys.argv) > 1 else "quiz brain company puzzle nut address country play fringe mansion torch critic clarify figure history two general blur fancy various check claim panther coffee"
+
+    # keypair_and_mnemonic = generate_keypair_and_mnemonic()
+    mnemonic = "oval stay develop alley embrace erase hill cabin alley deliver purpose light play renew begin thought heavy pact peace year sail lunch liar zero"
+    keypair_and_mnemonic = get_keypair_from_mnemonic(mnemonic)
 
     # Print the output as JSON
     print(json.dumps(keypair_and_mnemonic, indent=4))
