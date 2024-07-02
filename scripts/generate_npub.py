@@ -20,15 +20,19 @@ def entropy_from_mnemonic(mnemonic_phrase):
     return entropy
 
 def nsec_from_entropy(entropy):
-    # Convert the entropy to a PrivateKey
-    private_key = PrivateKey(entropy)
-    
-    # Get the private key in bech32 format
-    nsec = private_key.bech32()
-    
-    return nsec, private_key
+    # Ensure the entropy is 32 bytes and a bytes object
 
-    
+    if isinstance(entropy, bytearray):
+        entropy = bytes(entropy)
+    if len(entropy) < 32:
+        entropy = entropy.ljust(32, b'\x00')
+    elif len(entropy) > 32:
+        entropy = entropy[:32]
+
+    pk = PrivateKey(entropy)
+    return pk.bech32()
+
+
 def generate_keypair_and_mnemonic():
     # Generate a new private key and entropy
     pk, original_entropy = generate_private_key()
