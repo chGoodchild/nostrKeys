@@ -19,13 +19,19 @@ def entropy_from_mnemonic(mnemonic_phrase):
     entropy = mnemo.to_entropy(mnemonic_phrase)
     return entropy
 
+def nsec_from_entropy(entropy):
+    # Convert the entropy to a PrivateKey
+    private_key = PrivateKey(entropy)
+    
+    # Get the private key in bech32 format
+    nsec = private_key.bech32()
+    
+    return nsec, private_key
 
-def nsec_from_mnemonic(mnemonic):
-    pass
-
+    
 def generate_keypair_and_mnemonic():
-    # Generate a new private key
-    pk, entropy = generate_private_key()
+    # Generate a new private key and entropy
+    pk, original_entropy = generate_private_key()
 
     # Get the public key in bech32 format
     npub = pk.public_key.bech32()
@@ -33,13 +39,24 @@ def generate_keypair_and_mnemonic():
     # Get the private key in bech32 format
     nsec = pk.bech32()
 
+    # Generate mnemonic from original entropy
+    mnemonic = mnemonic_from_entropy(original_entropy)
+
+    # Verify that the mnemonic can be converted back to the same entropy
+    derived_entropy = entropy_from_mnemonic(mnemonic)
+    assert original_entropy == derived_entropy, "Entropy mismatch!"
+
+    derrived_nsec = nsec_from_entropy(derived_entropy)
+    assert nsec == derrived_nsec, "nsec mismatch!"
+
+    # Create the output dictionary
     output = {
         "npub": npub,
         "nsec": nsec,
-        "entropy": str(entropy),
-        "bip39_nsec": mnemonic_from_entropy(entropy),
-        "entropy_from_mnemonic": str(entropy_from_mnemonic(mnemonic_from_entropy(entropy))),
-        "nsec_from_mnemonic": nsec_from_mnemonic(mnemonic_from_entropy(entropy))
+        "entropy": original_entropy.hex(),
+        "bip39_nsec": mnemonic,
+        "entropy_from_mnemonic": derived_entropy.hex(),
+        "nsec_from_mnemonic": derrived_nsec
     }
 
     return output
