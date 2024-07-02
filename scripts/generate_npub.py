@@ -3,46 +3,29 @@ from nostr.key import PrivateKey
 from mnemonic import Mnemonic
 
 
-def mnemonic_to_public_key(mnemonic_phrase):
-    # Convert the mnemonic phrase back to a byte array
+def generate_private_key():
+    # Generate a new private key
+    pk = PrivateKey()
+    entropy = pk.raw_secret  # Get the raw entropy used to generate the private key
+    return pk, entropy
+
+def mnemonic_from_entropy(entropy):
     mnemo = Mnemonic("english")
-    byte_value = mnemo.to_seed(mnemonic_phrase, passphrase="")[:32]  # Take the first 32 bytes as the private key
-    private_key = PrivateKey(byte_value)
-    public_key = private_key.public_key
-    
-    # Get the public key in bech32 format
-    npub = public_key.bech32()
-    
-    return npub, public_key
-
-
-
-def mnemonic_to_private_key(mnemonic_phrase):
-    # Convert the mnemonic phrase back to a byte array
-    mnemo = Mnemonic("english")
-    byte_value = mnemo.to_seed(mnemonic_phrase, passphrase="")[:32]
-    private_key = PrivateKey(byte_value)
-    
-    # Get the private key in bech32 format
-    nsec = private_key.bech32()
-    
-    return nsec, private_key
-
-
-def get_mnemonic(key):
-    # Convert the private key to a hex string
-    hx = key.hex()
-
-    # Generate the BIP39 mnemonic phrase from the private key hex
-    byte_value = bytes.fromhex(hx)
-    mnemo = Mnemonic("english")
-    mnemonic_phrase = mnemo.to_mnemonic(byte_value)
+    mnemonic_phrase = mnemo.to_mnemonic(entropy)
     return mnemonic_phrase
 
+def entropy_from_mnemonic(mnemonic_phrase):
+    mnemo = Mnemonic("english")
+    entropy = mnemo.to_entropy(mnemonic_phrase)
+    return entropy
+
+
+def nsec_from_mnemonic(mnemonic):
+    pass
 
 def generate_keypair_and_mnemonic():
     # Generate a new private key
-    pk = PrivateKey()
+    pk, entropy = generate_private_key()
 
     # Get the public key in bech32 format
     npub = pk.public_key.bech32()
@@ -50,14 +33,13 @@ def generate_keypair_and_mnemonic():
     # Get the private key in bech32 format
     nsec = pk.bech32()
 
-    # Create the output dictionary
     output = {
         "npub": npub,
         "nsec": nsec,
-        # "bip39_npub": get_mnemonic(pk.public_key),
-        "bip39_nsec": get_mnemonic(pk),
-        # "new_npub": mnemonic_to_public_key(get_mnemonic(pk.public_key))[0],
-        "new_nsec": mnemonic_to_private_key(get_mnemonic(pk))[0]
+        "entropy": str(entropy),
+        "bip39_nsec": mnemonic_from_entropy(entropy),
+        "entropy_from_mnemonic": str(entropy_from_mnemonic(mnemonic_from_entropy(entropy))),
+        "nsec_from_mnemonic": nsec_from_mnemonic(mnemonic_from_entropy(entropy))
     }
 
     return output
