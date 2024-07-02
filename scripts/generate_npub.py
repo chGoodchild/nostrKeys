@@ -1,4 +1,4 @@
-import json
+import json, sys
 from nostr.key import PrivateKey
 from mnemonic import Mnemonic
 
@@ -81,14 +81,12 @@ def get_keypair_from_mnemonic(mnemonic):
 
 
 if __name__ == "__main__":
-    import sys
-    # Example usage
-    input_value = sys.argv[1] if len(sys.argv) > 1 else "quiz brain company puzzle nut address country play fringe mansion torch critic clarify figure history two general blur fancy various check claim panther coffee"
-
-    # keypair_and_mnemonic = generate_keypair_and_mnemonic()
-    mnemonic = "oval stay develop alley embrace erase hill cabin alley deliver purpose light play renew begin thought heavy pact peace year sail lunch liar zero"
-    keypair_and_mnemonic = get_keypair_from_mnemonic(mnemonic)
+    # Check if a mnemonic was provided as an argument
+    if len(sys.argv) > 1:
+        input_value = sys.argv[1]
+        keypair_and_mnemonic = get_keypair_from_mnemonic(input_value)
+    else:
+        keypair_and_mnemonic = generate_keypair_and_mnemonic()
 
     # Print the output as JSON
     print(json.dumps(keypair_and_mnemonic, indent=4))
-
