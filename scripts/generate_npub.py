@@ -2,6 +2,9 @@ import json, sys
 from nostr.key import PrivateKey
 from mnemonic import Mnemonic
 
+__version__ = '0.0.1'
+
+
 def generate_private_key():
     # Generate a new private key
     pk = PrivateKey()
