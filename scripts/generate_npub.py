@@ -4,7 +4,7 @@ from mnemonic import Mnemonic
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 
 def generate_pem_file(nsec, hex):
