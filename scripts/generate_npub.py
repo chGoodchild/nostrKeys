@@ -1,9 +1,27 @@
 import json, sys
 from nostr.key import PrivateKey
 from mnemonic import Mnemonic
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import serialization
 
 __version__ = '0.0.1'
 
+
+def generate_pem_file(nsec, hex):
+    # Assuming `private_key_bytes` is your decoded hex key (32 bytes for P-256)
+    private_key_bytes = bytes.fromhex(hex)
+    private_key = ec.derive_private_key(int.from_bytes(private_key_bytes, 'big'), ec.SECP256R1())
+
+    # Serialize the private key to PEM format
+    pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+
+    # Write the PEM to a file
+    with open(nsec + '.pem', 'wb') as pem_file:
+        pem_file.write(pem)
 
 def generate_private_key():
     # Generate a new private key
@@ -68,9 +86,10 @@ def populate_json(pk, original_entropy):
         output = {
             "npub": npub,
             "nsec": nsec,
-            "bip39_nsec": mnemonic,
-            "nsec_hex": nsec_hex
+            "bip39_nsec": mnemonic
         }
+
+    generate_pem_file(nsec, nsec_hex)
     return output
     
 def generate_keypair_and_mnemonic():
