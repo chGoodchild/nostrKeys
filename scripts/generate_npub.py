@@ -71,6 +71,8 @@ def populate_json(pk, original_entropy):
 
     # Convert the private key entropy to hex
     nsec_hex = original_entropy.hex()
+    # Convert the private key entropy to hex
+    npub_hex = pk.public_key.raw_bytes.hex()
 
     # Create the output dictionary
     if False:
@@ -80,12 +82,15 @@ def populate_json(pk, original_entropy):
             "entropy": original_entropy.hex(),
             "bip39_nsec": mnemonic,
             "nsec_from_mnemonic": derrived_nsec,
-            "nsec_hex": nsec_hex
+            "nsec_hex": nsec_hex,
+            "npub_hex": npub_hex
         }
     else:
         output = {
             "npub": npub,
             "nsec": nsec,
+            "nsec_hex": nsec_hex,
+            "npub_hex": npub_hex,
             "bip39_nsec": mnemonic
         }
 
