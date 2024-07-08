@@ -4,7 +4,7 @@ from mnemonic import Mnemonic
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization
 
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 
 def generate_pem_file(nsec, hex):
     # Assuming `private_key_bytes` is your decoded hex key (32 bytes for SECP256K1)
